@@ -1,12 +1,32 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCircle } from '@fortawesome/free-regular-svg-icons';
 
 const Todo = props => (
     <tr>
-        <td>{props.todo.todoDescription}</td>
-        <td>{props.todo.todoResponsible}</td>
-        <td>{props.todo.todoPriority}</td>
+        <td>
+            <button className="btn" onClick={function() {
+                console.log('clicked '+props.todo._id+' completed: '+props.todo.todoCompleted);
+                
+                const obj = {
+                    todoDescription: props.todo.todoDescription,
+                    todoResponsible: props.todo.todoResponsible,
+                    todoPriority: props.todo.todoPriority,
+                    todoCompleted: !props.todo.todoCompleted
+                };
+
+                axios.post('http://localhost:4000/todos/update/'+props.todo._id, obj)
+                .then(res => document.location.reload());
+            }}>
+                <FontAwesomeIcon icon={props.todo.todoCompleted ? faCheckCircle : faCircle} />
+            </button>
+        </td>
+        <td className={props.todo.todoCompleted ? 'completed' : ''}>{props.todo.todoDescription}</td>
+        <td className={props.todo.todoCompleted ? 'completed' : ''}>{props.todo.todoResponsible}</td>
+        <td className={props.todo.todoCompleted ? 'completed' : ''}>{props.todo.todoPriority}</td>
         <td>
             <Link to={"/edit/"+props.todo._id}>Edit</Link>
         </td>
@@ -43,6 +63,7 @@ export default class TodosList extends Component {
                 <table className="table table-striped" style={{ marginTop: 20 }}>
                     <thead>
                         <tr>
+                            <th>Complete</th>   
                             <th>Description</th>
                             <th>Responsible</th>
                             <th>Priority</th>
